@@ -1,0 +1,11 @@
+`define PC_RESET    64'h8000_0000
+`define DATA_WIDTH  64
+`define ADDR_WIDTH  64
+`define ZERO_WORD   64'h0
+`define ENA_1       1'b1
+`define ENA_0       1'b0
+`define AxSIZE_4B   3'b010
+`define AxBURST_FIXED       2'b00
+`define INSTR_WIDTH 32
+`define ARPROT_INSTR    3'b001
+`define ARPROT_DATA     3'b000
