@@ -6,6 +6,7 @@
 #include <dlfcn.h>
 #include "Emulator.h"
 #include "DiffTest.h"
+#include "AXI4.h"
 
 using namespace std;
 
@@ -66,6 +67,8 @@ void Emulator::Run() {
             if (__diffCheck == false) break;
         }
         if (__top->unknown_op == true) break;
+        if (__top->rresp != e_xResp_OKAY) break;
+        if (__top->bresp != e_xResp_OKAY) break;
     }
 }
 
@@ -189,7 +192,8 @@ void Emulator::Stop() {
     this->~Emulator();
     cout << "[Emulator releases] Emulate " << dec << __time_main <<" time steps "<< endl;
     #ifdef VM_TRACE
-    if (__time_main > time_record_beg) cout << "[Trace] Record between time " << dec << time_record_beg << " and " << MIN(time_record_end, __time_main) << endl;
+    if (__time_main > time_record_beg && time_record_beg != time_record_end) 
+        cout << "[Trace] Record between time " << dec << time_record_beg << " and " << MIN(time_record_end, __time_main) << endl;
     #endif
 }
 
@@ -207,6 +211,8 @@ void Emulator::ShowStopState() {
         }
     } else if (__diffCheck == false) {
         cout << "[Emulate Abort] DiffTEST tells reason " << endl;
+    } else if (__top->rresp != e_xResp_OKAY | __top->bresp != e_xResp_OKAY) {
+        cout << "[Emulate Abort] Memory tells reason at pc = 0x" << __top->pc << ", Instruction = 0x" << setw(8) << setfill('0') << __mem->ReadMem(__top->pc, 4) << endl;
     } else {
         cout << "[Emulate Stop] Reasonable" << endl;
     }

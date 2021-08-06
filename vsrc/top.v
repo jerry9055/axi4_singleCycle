@@ -13,7 +13,9 @@ module top #
     output wire fetch_pulse, 
     // <--- for diffTest 
     output wire [`REG_BUS] mcycle,
-    output wire unknown_op
+    output wire unknown_op,
+    output wire [1 : 0] bresp,
+    output wire [1 : 0] rresp
 );
     // user
     wire reset_n;
@@ -61,6 +63,8 @@ module top #
     wire axi_bready;
 
     assign reset_n = ~reset;
+    assign bresp = axi_bresp;
+    assign rresp = axi_rresp;
 
     master_axi #(
         .C_M_AXI_ID_WIDTH(AXI_ID_WIDTH),
@@ -130,7 +134,7 @@ module top #
         .C_S_AXI_ID_WIDTH(AXI_ID_WIDTH),
         .C_S_AXI_DATA_WIDTH(`DATA_WIDTH),
         .C_S_AXI_ADDR_WIDTH(`ADDR_WIDTH)
-    ) ins_slave_axi (
+    ) ins_slave_axi_mem (
         //global
         .S_AXI_ACLK(clk),
         .S_AXI_ARESETn(reset_n),

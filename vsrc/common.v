@@ -15,6 +15,8 @@
 `define FALSE           1'b0
 `define GPR_NUM         32
 `define ZERO_REG_ADDR   5'b00000
+`define PMEM_SIZE       (128 * 1024 * 1024)
+`define PMEM_BASE       64'h80000000
 
 // ALU_INx_TYPE
 `define ALU_IN1_REG     1'd0

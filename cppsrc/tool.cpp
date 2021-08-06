@@ -1,6 +1,8 @@
 #include <assert.h>
 #include "AXI4.h"
 #include "Emulator.h"
+#include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -24,6 +26,8 @@ extern "C" void ReadData(uint64_t raddr, uint8_t arsize, uint64_t* rdata, uint8_
     } else {
         *rdata = 0;
         *rresp = e_xResp_DECERR;
+        cout << "[Memory Warning] Cannot access memory at address 0x"
+        << setw(8) << hex << setfill('0') << setiosflags(ios::uppercase) << raddr << endl;
     }  
 }
 
@@ -45,5 +49,7 @@ extern "C" void WriteData(uint64_t waddr, uint8_t awsize, uint64_t wdata, uint8_
         *bresp = e_xResp_OKAY;
     } else {
         *bresp = e_xResp_DECERR;
+        cout << "[Memory Warning] Cannot access memory at address 0x" 
+        << setw(8) << hex << setfill('0') << setiosflags(ios::uppercase) << waddr << endl;
     }
 }
