@@ -11,12 +11,18 @@ V_FLAG = --cc --exe --trace -Wall $(V_FILE) $(CPP_FILE) \
 		+incdir+vsrc --top-module $(V_TOP) \
 		-LDFLAGS "-ldl -O0"
 
+ifdef DIFF
+V_FLAG += -CFLAGS "-D DIFF_TEST"
+endif
 DIFF_REF_SO = /home/ly/single/gitcode/oscpu/nemu/build/riscv64-nemu-interpreter-so
 
 ifdef TEST
 BIN = /home/ly/single/gitcode/ysyx/am-kernels/tests/cpu-tests/build/$(TEST)-riscv64-mycpu.bin			#am/cpu-test
 endif
-
+ifdef RVTEST
+BIN = /home/ly/single/gitcode/ysyx/riscv-tests/build/$(RVTEST)-riscv64-mycpu.bin	#riscv-test
+endif
+BIN ?= test.bin
 ARGS = --diff=$(DIFF_REF_SO) $(BIN)
 
 .PHONY:

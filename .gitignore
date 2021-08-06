@@ -1,6 +1,7 @@
 *
 !*/
 !*.h
+!*.cpp
 !*.c
 !*.cc
 !*.S
@@ -8,6 +9,7 @@
 !*.sh
 !*.py
 !*.mk
+!*.v
 !Makefile
 !README
 !LICENSE

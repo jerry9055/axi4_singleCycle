@@ -6,46 +6,38 @@ module master_axi #
     // Do not modify the parameters beyond this line
 
     // Burst Length. Supports 1, 2, 4, 8, 16, 32, 64, 128, 256 burst lengths
-    parameter integer C_M_AXI_BURST_LEN	= 16,
+    // parameter integer C_M_AXI_BURST_LEN	= 16,   //maximum number of FIXED mode
     // Thread ID Width
     parameter integer C_M_AXI_ID_WIDTH	= 1,
     // Width of Address Bus
     parameter integer C_M_AXI_ADDR_WIDTH	= 32,
     // Width of Data Bus
-    parameter integer C_M_AXI_DATA_WIDTH	= 32,
+    parameter longint C_M_AXI_DATA_WIDTH	= 32
     // Width of User Write Address Bus
-    /* verilator lint_off UNUSED */
-    parameter integer C_M_AXI_AWUSER_WIDTH	= 0, 
-    /* verilator lint_off UNUSED */
+    // parameter integer C_M_AXI_AWUSER_WIDTH	= 0, 
     // Width of User Read Address Bus
-    parameter integer C_M_AXI_ARUSER_WIDTH	= 0,
+    // parameter integer C_M_AXI_ARUSER_WIDTH	= 0,
     // Width of User Write Data Bus
-    parameter integer C_M_AXI_WUSER_WIDTH	= 0,
-    // Width of User Read Data Bus
-    parameter integer C_M_AXI_RUSER_WIDTH	= 0,
+    // parameter integer C_M_AXI_WUSER_WIDTH	= 0,
     // Width of User Response Bus
-    parameter integer C_M_AXI_BUSER_WIDTH	= 0
+    // parameter integer C_M_AXI_BUSER_WIDTH	= 0
 )
 (
     // Users to add ports here
-
+    output wire unknown_op,
+    output wire [`REG_BUS] gpr [`GPR_NUM - 1 : 0],
+    output wire [`REG_BUS] mcycle,
+    output wire [`REG_BUS] pc,
+    output wire fetch_pulse,
     // User ports ends
     // Do not modify the ports beyond this line
-
-    // // Initiate AXI transactions
-    // input wire  INIT_AXI_TXN,
-    // // Asserts when transaction is complete
-    // output wire  TXN_DONE,
-    // // Asserts when ERROR is detected
-    // output reg  ERROR,
-
 
     // Global Clock Signal.
     input wire  M_AXI_ACLK,
     // Global Reset Singal. This Signal is Active Low
     input wire  M_AXI_ARESETn,
 
-/*
+
     // Write Address Channel ----->
     // Master Interface Write Address ID
     output wire [C_M_AXI_ID_WIDTH-1 : 0] M_AXI_AWID,
@@ -58,9 +50,6 @@ module master_axi #
     // Burst type. The burst type and the size information, 
     // determine how the address for each transfer within the burst is calculated.
     output wire [1 : 0] M_AXI_AWBURST,
-    // Lock type. Provides additional information about the
-    // atomic characteristics of the transfer.
-    output wire  M_AXI_AWLOCK,
     // Memory type. This signal indicates how transactions
     // are required to progress through a system.
     output wire [3 : 0] M_AXI_AWCACHE,
@@ -74,7 +63,8 @@ module master_axi #
     // multiple logical interfaces.
     output wire [3 : 0] M_AXI_AWREGION,
     // Optional User-defined signal in the write address channel.
-    output wire [C_M_AXI_AWUSER_WIDTH-1 : 0] M_AXI_AWUSER,
+    // Generally, this specification recommends that the User signals are not used,
+    // !!!!!!! output wire [C_M_AXI_AWUSER_WIDTH-1 : 0] M_AXI_AWUSER, // !!!!!!!
     // Write address valid. This signal indicates that
     // the channel is signaling valid write address and control information.
     output wire  M_AXI_AWVALID,
@@ -94,7 +84,8 @@ module master_axi #
     // Write last. This signal indicates the last transfer in a write burst.
     output wire  M_AXI_WLAST,
     // Optional User-defined signal in the write data channel.
-    output wire [C_M_AXI_WUSER_WIDTH-1 : 0] M_AXI_WUSER,
+    // Generally, this specification recommends that the User signals are not used,
+    //!!!!! output wire [C_M_AXI_WUSER_WIDTH-1 : 0] M_AXI_WUSER, //!!!!!!!
     // Write valid. This signal indicates that valid write
     // data and strobes are available
     output wire  M_AXI_WVALID,
@@ -110,7 +101,8 @@ module master_axi #
     // Write response. This signal indicates the status of the write transaction.
     input wire [1 : 0] M_AXI_BRESP,
     // Optional User-defined signal in the write response channel
-    input wire [C_M_AXI_BUSER_WIDTH-1 : 0] M_AXI_BUSER,
+    // Generally, this specification recommends that the User signals are not used,
+    //!!!! input wire [C_M_AXI_BUSER_WIDTH-1 : 0] M_AXI_BUSER, //!!!!
     // Write response valid. This signal indicates that the
     // channel is signaling a valid write response.
     input wire  M_AXI_BVALID,
@@ -118,7 +110,7 @@ module master_axi #
     // can accept a write response.
     output wire  M_AXI_BREADY,
     // <----- Write response channel
-*/
+
 
     // Read address channel ----->
     // Master Interface Read Address.
@@ -147,7 +139,7 @@ module master_axi #
     output wire [3 : 0] M_AXI_ARREGION,
     // Optional User-defined signal in the read address channel.
     // Generally, this specification recommends that the User signals are not used.
-    // output wire [C_M_AXI_ARUSER_WIDTH-1 : 0] M_AXI_ARUSER,  
+    //!!!!!!!!! output wire [C_M_AXI_ARUSER_WIDTH-1 : 0] M_AXI_ARUSER,  ///!!!!!!!!
     // Write address valid. This signal indicates that
     // the channel is signaling valid read address and control information
     output wire  M_AXI_ARVALID,
@@ -168,9 +160,8 @@ module master_axi #
     // Read last. This signal indicates the last transfer in a read burst
     input wire  M_AXI_RLAST,
     // Optional User-defined signal in the read address channel.
-    /* verilator lint_off LITENDIAN */
-    input wire [C_M_AXI_RUSER_WIDTH-1 : 0] M_AXI_RUSER, 
-    /* verilator lint_off LITENDIAN */
+    // Generally, this specification recommends that the User signals are not used.
+    //!!!! input wire [C_M_AXI_RUSER_WIDTH-1 : 0] M_AXI_RUSER,  //!!!!!!!
     // Read valid. This signal indicates that the channel
     // is signaling the required read data.
     input wire  M_AXI_RVALID,
@@ -179,85 +170,208 @@ module master_axi #
     output wire  M_AXI_RREADY
     // <----- Read data channel 
 );
-    parameter [1 : 0] MASTER_IDLE = 2'b00,
-                      MASTER_FETCH = 2'b01;
+
+    parameter [1 : 0] MASTER_IDLE = 2'd0,
+                      MASTER_FETCH = 2'd1,
+                      MASTER_MEM = 2'd2;
     wire reset;
     reg [`INSTR_WIDTH - 1 : 0] instr;
-    reg fetch_pulse;
     reg [`ADDR_WIDTH - 1: 0] axi_araddr;
-    reg [`ADDR_WIDTH - 1: 0] pc;
+    reg [7 : 0] axi_burst_size;
     reg [2 : 0] axi_arsize;
+    reg [2 : 0] axi_arprot;
     reg axi_arvalid;
     reg [1 : 0] master_state;
     reg axi_rready;
     reg last_rlast;
     reg instr_valid;
+    wire [`REG_BUS] mem_read_data;
+    wire mem_read;
+    wire mem_write;
+    wire [`REG_BUS] mem_visit_addr;
+    wire [`OP_WIDTH_BUS] op_width;
+    reg [`ADDR_WIDTH - 1: 0] axi_awaddr;
+    reg [2 : 0] axi_awsize;
+    reg axi_awvalid;
+    wire [`REG_BUS] mem_write_data;
+    reg [`REG_BUS] axi_wdata;
+    reg [C_M_AXI_DATA_WIDTH/8-1 : 0] axi_wstrb;
+    reg axi_wvalid;
+    reg axi_bready;
+    reg mem_visit_end;
 
     // I/O Connections assignments
     assign reset = ~M_AXI_ARESETn;
-    // Read Address (AR)
+    // Address Read (AR)
     assign M_AXI_ARID = 'b0;
     assign M_AXI_ARADDR	= axi_araddr;
-    //Burst LENgth is number of transaction beats, minus 1
-    /* verilator lint_off WIDTH */
-	assign M_AXI_ARLEN	= C_M_AXI_BURST_LEN - 1;
-    /* verilator lint_off WIDTH */
+	assign M_AXI_ARLEN	= axi_burst_size - 1;   //Burst LENgth is number of transaction beats, minus 1
     assign M_AXI_ARSIZE = axi_arsize;
 	assign M_AXI_ARBURST = `AxBURST_FIXED;
     assign M_AXI_ARCACHE = 4'b0010; //Normal Non-cacheable Non-bufferable
-    assign M_AXI_ARPROT = fetch_pulse ? `ARPROT_INSTR : `ARPROT_DATA;
+    assign M_AXI_ARPROT = axi_arprot;
     assign M_AXI_ARQOS = 4'h0;
     assign M_AXI_ARREGION = 'b0;
     assign M_AXI_ARVALID = axi_arvalid;
+    // Read Data (R)
     assign M_AXI_RREADY = axi_rready;
+    // Address Write (AW)
+    assign M_AXI_AWID = 'b0;
+    assign M_AXI_AWADDR = axi_awaddr;
+    assign M_AXI_AWLEN = axi_burst_size - 1; //Burst LENgth is number of transaction beats, minus 1. And here May Change later
+    assign M_AXI_AWSIZE = axi_awsize;
+    assign M_AXI_AWBURST = `AxBURST_FIXED;
+    assign M_AXI_AWCACHE = 4'b0010; //Normal Non-cacheable Non-bufferable
+    assign M_AXI_AWPROT = `ARPROT_DATA;
+    assign M_AXI_AWQOS = 4'h0;
+    assign M_AXI_AWREGION = 'b0;
+    assign M_AXI_AWVALID = axi_awvalid;
+    // Write data (W)
+    assign M_AXI_WDATA = axi_wdata;
+    assign M_AXI_WSTRB = axi_wstrb;
+    assign M_AXI_WLAST = M_AXI_WREADY & M_AXI_WVALID;
+    assign M_AXI_WVALID = axi_wvalid;
+    // Write response (B)
+    assign M_AXI_BREADY = axi_bready;
 
-    ip_core ins_ip_core (
-        .clk(M_AXI_ACLK),
-        .reset(reset),
-        .instr(instr),
-        .instr_valid(instr_valid),
+    // user
+    assign mem_read_data = (master_state == MASTER_MEM & mem_visit_end) ? M_AXI_RDATA : `ZERO_WORD;
+    assign mem_visit_end = (M_AXI_BVALID & M_AXI_BREADY) | (master_state == MASTER_MEM & M_AXI_RVALID & M_AXI_RREADY);
+    assign instr_valid = M_AXI_RVALID & M_AXI_RREADY & master_state == MASTER_FETCH & M_AXI_RRESP == `xRESP_OK;    
+    assign instr = M_AXI_RDATA[`INSTR_WIDTH - 1 : 0];
 
-        .pc(pc),
-        .fetch_pulse(fetch_pulse)
-    );
-
-    // axi_arsize
+    // axi_bready
     always @(posedge M_AXI_ACLK) begin
-        if (M_AXI_ARESETn == 1'b0) axi_arsize <= 'b0; 
+        if (M_AXI_ARESETn == 1'b0) axi_bready <= `FALSE;
         else begin
-            if (fetch_pulse) axi_arsize <= `AxSIZE_4B;
-            else axi_arsize <= axi_arsize;
+            if (~axi_bready & M_AXI_BVALID) axi_bready <= `TRUE;
+            else axi_bready <= `FALSE;
         end
+    end
+
+    // axi_wvalid
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETn == 1'b0) axi_wvalid <= `FALSE;
+        else begin
+            if (M_AXI_AWVALID & M_AXI_AWREADY) axi_wvalid <= `TRUE;
+            else if (M_AXI_WREADY & axi_wvalid) axi_wvalid <= `FALSE;
+            else axi_wvalid <= axi_wvalid;
+        end
+    end
+
+    // axi_wstrb
+    always @(*) begin
+        axi_wstrb = {axi_awaddr % (C_M_AXI_DATA_WIDTH / 8)}[7:0];
+        case (M_AXI_AWSIZE)
+            `AxSIZE_1B: axi_wstrb = 8'b1        << axi_wstrb;
+            `AxSIZE_2B: axi_wstrb = 8'b11       << axi_wstrb;
+            `AxSIZE_4B: axi_wstrb = 8'b1111     << axi_wstrb;
+            `AxSIZE_8B: axi_wstrb = 8'b11111111 << axi_wstrb;
+            default:;
+        endcase
+    end 
+
+    // axi_wdata
+    always @(posedge M_AXI_ACLK) begin
+        if (mem_write) axi_wdata <= mem_write_data;
+        else axi_wdata <= axi_wdata;
+    end
+
+    // axi_awvalid
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETn == 1'b0)
+            axi_awvalid <= `FALSE;
+        else if (~axi_awvalid & mem_write) 
+            axi_awvalid <= `TRUE;
+        else if (M_AXI_AWREADY & axi_awvalid)
+            axi_awvalid <= `FALSE;
+        else 
+            axi_awvalid <= axi_awvalid;
+    end
+
+    // axi_awsize
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETn == 1'b0) axi_awsize <= 'b0;
+        else begin
+            if (mem_write) begin
+                case (op_width) 
+                    `OP_WIDTH_1_MEM: axi_awsize <= `AxSIZE_1B;
+                    `OP_WIDTH_2_MEM: axi_awsize <= `AxSIZE_2B;
+                    `OP_WIDTH_4_MEM: axi_awsize <= `AxSIZE_4B;
+                    `OP_WIDTH_8_MEM: axi_awsize <= `AxSIZE_8B;
+                    default:;
+                endcase
+            end else axi_awsize <= axi_awsize;
+        end
+    end
+
+    // axi_awaddr
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETn == 1'b0) axi_awaddr <= 'b0;
+        if (mem_write) axi_awaddr <= mem_visit_addr;
+        else axi_awaddr <= axi_awaddr;
     end
 
     // axi_araddr
     always @ (posedge M_AXI_ACLK) begin
         if (M_AXI_ARESETn == 1'b0) axi_araddr <= 'b0; 
         else begin
-            if (fetch_pulse == 1'b1) axi_araddr <= pc;
+            if (fetch_pulse) axi_araddr <= pc;
+            else if (mem_read) axi_araddr <= mem_visit_addr;
             else axi_araddr <= axi_araddr;
         end 
+    end
+
+    // axi_burst_size
+    assign axi_burst_size = 1;  //now burst size should be 1,may change later
+
+    // axi_arsize
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETn == 1'b0) axi_arsize <= 'b0; 
+        else begin
+            if (fetch_pulse) axi_arsize <= `AxSIZE_4B;
+            else if (mem_read) begin
+                case (op_width)
+                    `OP_WIDTH_1_MEM: axi_arsize <= `AxSIZE_1B;
+                    `OP_WIDTH_2_MEM: axi_arsize <= `AxSIZE_2B;
+                    `OP_WIDTH_4_MEM: axi_arsize <= `AxSIZE_4B;
+                    `OP_WIDTH_8_MEM: axi_arsize <= `AxSIZE_8B;
+                    default:;
+                endcase 
+            end 
+            else axi_arsize <= axi_arsize;
+        end
+    end
+
+    // axi_arprot
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETn == 1'b0) axi_arprot <= `ARPROT_DATA;
+        else begin
+            if ( fetch_pulse) axi_arprot <= `ARPROT_INSTR;
+            else if (mem_read)  axi_arprot <= `ARPROT_DATA;
+            else axi_arprot <= axi_arprot;
+        end
     end
 
     // axi_arvalid
     always @ (posedge M_AXI_ACLK) begin
         if (M_AXI_ARESETn == 1'b0)
-            axi_arvalid <= 1'b0;
-        else if (~axi_arvalid && fetch_pulse)
-            axi_arvalid <= 1'b1;
-        else if (M_AXI_ARREADY && axi_arvalid)
-            axi_arvalid <= 1'b0;
+            axi_arvalid <= `FALSE;
+        else if (~axi_arvalid & (fetch_pulse | mem_read) )
+            axi_arvalid <= `TRUE;
+        else if (M_AXI_ARREADY & axi_arvalid)
+            axi_arvalid <= `FALSE;
         else
             axi_arvalid <= axi_arvalid;
     end
 
     // axi_rready
     always @ (posedge M_AXI_ACLK) begin
-        if (M_AXI_ARESETn == 'b0) axi_rready <= 1'b0;
-        else if(M_AXI_RVALID) begin
-            if (M_AXI_RLAST && axi_rready) axi_rready <= 1'b0;
-            else axi_rready <= 1'b1;
-        end
+        if (M_AXI_ARESETn == 'b0) axi_rready <= `FALSE;
+        else begin
+            if(M_AXI_RVALID & ~axi_rready) axi_rready <= `TRUE;
+            else axi_rready <= `FALSE;
+        end 
     end
 
     // master_state
@@ -267,22 +381,55 @@ module master_axi #
         end else begin
             case (master_state)
                 MASTER_IDLE:
-                    if (fetch_pulse == 1'b1) master_state <= MASTER_FETCH;
+                    if (fetch_pulse) master_state <= MASTER_FETCH;
                     else master_state <= MASTER_IDLE;
                 MASTER_FETCH: begin
                     last_rlast <= M_AXI_RLAST;
-                    if (last_rlast && ~M_AXI_RLAST) master_state <= MASTER_IDLE;
+                    if (~last_rlast && M_AXI_RLAST) begin
+                        if (mem_read | mem_write) master_state <= MASTER_MEM;
+                        else master_state <= MASTER_IDLE;
+                    end 
                     else master_state <= MASTER_FETCH;
+                end
+                MASTER_MEM: begin
+                    if (mem_visit_end) master_state <= MASTER_IDLE;
+                    else master_state <= MASTER_MEM;
                 end
                 default:;
             endcase
         end
     end
 
-    // instr_valid
-    always @ (*) begin
-        instr = M_AXI_RDATA;
-        instr_valid = M_AXI_RVALID & master_state == MASTER_FETCH;
-    end
+
+    ip_core ins_ip_core (
+        .clk(M_AXI_ACLK),
+        .reset(reset),
+        .instr(instr),
+        .instr_valid(instr_valid),
+        .mem_read_data(mem_read_data),
+        .mem_visit_end(mem_visit_end),
+
+        .pc(pc),
+        .fetch_pulse(fetch_pulse),
+        .unknown_op(unknown_op),
+        .gpr(gpr),
+        .mcycle(mcycle),
+        .mem_read(mem_read),
+        .mem_write(mem_write),
+        .mem_visit_addr(mem_visit_addr),
+        .op_width(op_width),
+        .mem_write_data(mem_write_data)
+    );
+
+    wire __unused =
+        M_AXI_RDATA == 'b0 & 
+        M_AXI_RID == 'b0 &
+        'b0 == op_width &
+        'b0 == mem_write &
+        'b0 == mem_visit_addr &
+        'b0 == M_AXI_BID &
+        'b0 == M_AXI_BRESP
+        // 'b0 == &
+        ;
 
 endmodule
