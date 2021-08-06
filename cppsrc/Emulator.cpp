@@ -12,8 +12,8 @@ using namespace std;
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 
-static uint64_t time_record_beg = 1080;
-static uint64_t time_record_end = 6000;
+static uint64_t time_record_beg = 0;
+static uint64_t time_record_end = 0;
 
 Emulator::Emulator(int argc, char** argv) {
     assert(argv != NULL && argc > 1);
