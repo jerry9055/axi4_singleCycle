@@ -14,19 +14,19 @@ V_FLAG = --cc --exe --trace -Wall $(V_FILE) $(CPP_FILE) \
 ifdef DIFF
 V_FLAG += -CFLAGS "-D DIFF_TEST"
 endif
-DIFF_REF_SO = /home/ly/single/gitcode/oscpu/nemu/build/riscv64-nemu-interpreter-so
+DIFF_REF_SO = /home/lary/Documents/gitcode/oscpu/nemu/build/riscv64-nemu-interpreter-so
 
 
 #############   BIN    ########
 ifdef TEST
-BIN = /home/ly/single/gitcode/ysyx/am-kernels/tests/cpu-tests/build/$(TEST)-riscv64-mycpu.bin			#am/cpu-test
+BIN = /home/lary/Documents/gitcode/ysyx/am-kernels/tests/cpu-tests/build/$(TEST)-riscv64-mycpu.bin			#am/cpu-test
 endif
 ifdef RVTEST
-BIN = /home/ly/single/gitcode/ysyx/riscv-tests/build/$(RVTEST)-riscv64-mycpu.bin	#riscv-test
+BIN = /home/lary/Documents/gitcode/ysyx/riscv-tests/build/$(RVTEST)-riscv64-mycpu.bin	#riscv-test
 endif
 # BIN ?= test.bin
-# BIN ?= /home/ly/single/gitcode/ysyx/am-kernels/tests/am-tests/build/amtest-riscv64-mycpu.bin	#am/am-test
-BIN ?= /home/ly/single/gitcode/ysyx/am-kernels/kernels/hello/build/hello-riscv64-mycpu.bin #hello
+# BIN ?= /home/lary/Documents/gitcode/ysyx/am-kernels/tests/am-tests/build/amtest-riscv64-mycpu.bin	#am/am-test
+BIN ?= /home/lary/Documents/gitcode/ysyx/am-kernels/kernels/hello/build/hello-riscv64-mycpu.bin #hello
 
 
 ARGS = --diff=$(DIFF_REF_SO) $(BIN)

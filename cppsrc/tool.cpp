@@ -7,7 +7,7 @@
 using namespace std;
 
 extern Emulator* emulator;
-extern "C" void ReadData(uint64_t raddr, uint8_t arsize, uint64_t* rdata, uint8_t* rresp) {
+extern "C" void ReadData(long long raddr, char arsize, long long* rdata, char* rresp) {
     assert (emulator);
     Mem *mem = emulator->GetMem();
     assert(mem);
@@ -31,7 +31,7 @@ extern "C" void ReadData(uint64_t raddr, uint8_t arsize, uint64_t* rdata, uint8_
     }  
 }
 
-extern "C" void WriteData(uint64_t waddr, uint8_t awsize, uint64_t wdata, uint8_t* bresp) {
+extern "C" void WriteData(long long waddr, char awsize, long long wdata, char* bresp) {
     assert (emulator);
     Mem *mem = emulator->GetMem();
     assert(mem);

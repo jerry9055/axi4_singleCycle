@@ -3,15 +3,8 @@
 ISA=riscv64
 ####### mycpu ######
 CMP_SRC=mycpu
-CPUTEST_PATH=$AM_HOME/../am-kernels/tests/cpu-tests #cpu-test
-# CPUTEST_PATH=/home/ly/single/gitcode/ysyx/riscv-tests #riscv-test
-# echo "compiling testcases..."
-# if make -C $CPUTEST_PATH ARCH=$ISA-$CMP_SRC &> /dev/null; then
-#   echo "testcases compile OK"
-# else
-#   echo "testcases compile error... exit..."
-#   exit
-# fi
+# CPUTEST_PATH=/home/lary/Documents/gitcode/ysyx/am-kernels/tests/cpu-tests #cpu-test
+CPUTEST_PATH=/home/lary/Documents/gitcode/ysyx/riscv-tests #riscv-test
 
 ####### nutshell ###
 # CMP_SRC=nutshell
@@ -25,8 +18,8 @@ for file in $files; do
   base=`basename $file | sed -e "s/-$ISA-$CMP_SRC.bin//"`
   printf "[%14s] " $base
   logfile=$base-log.txt
-  make run DIFF=1 TEST=$base &> $logfile  #cpu-test
-  # make run DIFF=1 RVTEST=$base &> $logfile  #riscv-test
+  # make run DIFF=1 TEST=$base &> $logfile  #cpu-test
+  make run DIFF=1 RVTEST=$base &> $logfile  #riscv-test
 
   if (grep 'nemu: .*HIT GOOD TRAP' $logfile > /dev/null) then
     echo -e "\033[1;32mPASS!\033[0m"
